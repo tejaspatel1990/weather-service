@@ -1,0 +1,13 @@
+package com.weatherservice.constant;
+
+public final class PropertiesConstant {
+
+	private PropertiesConstant() {
+	}
+	
+	public final static String OWP_NOT_FOUND = "owp.404";
+	public final static String OWP_UNAUTHORISED = "owp.401";
+	public final static String OWP_TOO_MANY_REQUEST = "owp.429";
+	public final static String PARAMETER_REQUIRED = "MissingServletRequestParameterException";
+	public final static String INTERNAL_SERVER_EXCEPTION = "internal.server.error";
+}
