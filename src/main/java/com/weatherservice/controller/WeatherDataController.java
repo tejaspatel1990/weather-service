@@ -1,11 +1,13 @@
 package com.weatherservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.weatherservice.apicore.model.ApiResponse;
 import com.weatherservice.model.CurrentWeatherData;
 import com.weatherservice.model.WeatherHistory;
 import com.weatherservice.service.WeatherDataService;
@@ -23,14 +25,19 @@ public class WeatherDataController {
 
 	@ApiOperation(value = "Get current weather condition")
 	@GetMapping("/current")
-	public CurrentWeatherData getCurrentWeatherCondition(
+	public ApiResponse<CurrentWeatherData> getCurrentWeatherCondition(
 			@RequestParam(name = "location", required = true) String location) {
-		return weatherDataService.getCurrentWeatherData(location);
+		CurrentWeatherData weatherData = weatherDataService.getCurrentWeatherData(location);
+		ApiResponse<CurrentWeatherData> apiResponse = new ApiResponse<>(weatherData, HttpStatus.OK.value(), null);
+		return apiResponse;
 	}
 
 	@ApiOperation(value = "Get historial weather data")
 	@GetMapping("/history")
-	public WeatherHistory getCurrentWeatherHistory(@RequestParam(name = "location", required = true) String location) {
-		return weatherDataService.getWeatherHistory(location);
+	public ApiResponse<WeatherHistory> getCurrentWeatherHistory(
+			@RequestParam(name = "location", required = true) String location) {
+		WeatherHistory weatherHistory = weatherDataService.getWeatherHistory(location);
+		ApiResponse<WeatherHistory> apiResponse = new ApiResponse<>(weatherHistory, HttpStatus.OK.value(), null);
+		return apiResponse;
 	}
 }
