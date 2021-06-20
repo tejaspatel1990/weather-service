@@ -9,7 +9,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.weatherservice.model.CurrentWeatherData;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.weatherservice.apicore.exception.ApplicationErrorException;
+import com.weatherservice.constant.PropertiesConstant;
+import com.weatherservice.exception.CircuitBreakerFallBackException;
+import com.weatherservice.model.WeatherData;
 import com.weatherservice.provider.WeatherDataProvider;
 import com.weatherservice.provider.openweathermap.dto.CurrentWeatherResponseDto;
 import com.weatherservice.provider.openweathermap.util.OpenWeatherMapUtils;
@@ -30,12 +34,17 @@ public class OpenWeatherMapProvider implements WeatherDataProvider {
 	private RestTemplate restTemplate;
 
 	@Override
-	public CurrentWeatherData getCurrentWeatherData(String location) throws HttpClientErrorException {
+	@HystrixCommand(fallbackMethod = "getFallbackWeatherData")
+	public WeatherData getCurrentWeatherData(String location) throws HttpClientErrorException {
 
 		ResponseEntity<CurrentWeatherResponseDto> entity = restTemplate.getForEntity(buildCurrentWeatherURI(location),
 				CurrentWeatherResponseDto.class);
 		return buildCurrentWeatherDataModel(entity.getBody());
 
+	}
+
+	public WeatherData getFallbackWeatherData(String location) {
+		throw new CircuitBreakerFallBackException(PropertiesConstant.INTERNAL_SERVER_EXCEPTION, null);
 	}
 
 	private String buildCurrentWeatherURI(String location) {
@@ -44,8 +53,8 @@ public class OpenWeatherMapProvider implements WeatherDataProvider {
 		return uriComponents.toUriString();
 	}
 
-	private CurrentWeatherData buildCurrentWeatherDataModel(CurrentWeatherResponseDto responseDto) {
-		CurrentWeatherData currentWeather = new CurrentWeatherData();
+	private WeatherData buildCurrentWeatherDataModel(CurrentWeatherResponseDto responseDto) {
+		WeatherData currentWeather = new WeatherData();
 		currentWeather.setPressure(responseDto.getMain().getPressure());
 		currentWeather.setTemparature(responseDto.getMain().getTemp());
 		boolean takeUmbrella = OpenWeatherMapUtils.takeUmbrella(responseDto.getWeather().get(0).getMain(),

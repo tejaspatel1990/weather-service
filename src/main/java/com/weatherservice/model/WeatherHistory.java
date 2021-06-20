@@ -16,7 +16,7 @@ public class WeatherHistory {
 	Float averagePressure;
 
 	@ApiModelProperty(name = "history", notes = "Weather history")
-	List<CurrentWeatherData> history = new ArrayList<>();
+	List<WeatherData> history = new ArrayList<>();
 
 	public Float getAverageTemparature() {
 		return averageTemparature;
@@ -34,11 +34,11 @@ public class WeatherHistory {
 		this.averagePressure = averagePresuure;
 	}
 
-	public List<CurrentWeatherData> getHistory() {
+	public List<WeatherData> getHistory() {
 		return history;
 	}
 
-	public void setHistory(List<CurrentWeatherData> history) {
+	public void setHistory(List<WeatherData> history) {
 		this.history = history;
 	}
 

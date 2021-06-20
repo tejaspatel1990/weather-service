@@ -9,7 +9,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import com.weatherservice.apicore.exception.ApplicationErrorException;
 import com.weatherservice.apicore.exception.NoDataFoundException;
 import com.weatherservice.constant.PropertiesConstant;
-import com.weatherservice.model.CurrentWeatherData;
+import com.weatherservice.exception.CircuitBreakerFallBackException;
+import com.weatherservice.model.WeatherData;
 import com.weatherservice.provider.WeatherDataProvider;
 
 @Service
@@ -19,7 +20,11 @@ public class WeatherDataManager {
 	@Qualifier("openWeatherMapProvider")
 	private WeatherDataProvider openWeatherMapProvider;
 
-	public CurrentWeatherData getCurrentWeatherData(String location) {
+	@Autowired
+	@Qualifier("internalWeatherProvider")
+	private WeatherDataProvider internalWeatherProvider;
+
+	public WeatherData getCurrentWeatherData(String location) {
 
 		try {
 			return openWeatherMapProvider.getCurrentWeatherData(location);
@@ -34,6 +39,8 @@ public class WeatherDataManager {
 			} else if (exception.getStatusCode() == HttpStatus.NOT_FOUND) {
 				throw new NoDataFoundException(PropertiesConstant.OWP_NOT_FOUND);
 			}
+		} catch (CircuitBreakerFallBackException exception) {
+			return internalWeatherProvider.getCurrentWeatherData(location);
 		}
 
 		return null;
