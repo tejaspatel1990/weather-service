@@ -12,7 +12,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 /**
  * Configuration for swagger url
  * 
- * @author Tejas Patel
+ * @author tejas
  *
  */
 @Configuration
