@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.weatherservice.apicore.exception.ApplicationErrorException;
 import com.weatherservice.apicore.exception.NoDataFoundException;
 import com.weatherservice.constant.PropertiesConstant;
 import com.weatherservice.model.WeatherData;
@@ -35,7 +36,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 	private WeatherDataCustomRepository weatherDataCustomRepository;
 
 	@Override
-	public WeatherData getCurrentWeatherData(String location) {
+	public WeatherData getCurrentWeatherData(String location) throws NoDataFoundException, ApplicationErrorException {
 
 		WeatherData weatherData = weatherDataManager.getCurrentWeatherData(location);
 		saveWeatherData(weatherData);

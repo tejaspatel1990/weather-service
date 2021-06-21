@@ -117,4 +117,9 @@ public class ApiCoreGlobalExceptionHandler {
 		return new ResponseEntity<>(body, headers, status);
 	}
 
+	public ApiCoreGlobalExceptionHandler withMessageUtil(ApiCorei18nMessageUtil apiCorei18nMessageUtil) {
+		this.apiCorei18nMessageUtil = apiCorei18nMessageUtil;
+		return this;
+	}
+
 }
