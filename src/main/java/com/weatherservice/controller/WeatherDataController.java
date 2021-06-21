@@ -1,13 +1,14 @@
 package com.weatherservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.weatherservice.apicore.exception.ApplicationErrorException;
+import com.weatherservice.apicore.exception.NoDataFoundException;
 import com.weatherservice.apicore.model.ApiResponse;
 import com.weatherservice.model.WeatherData;
 import com.weatherservice.model.WeatherHistory;
@@ -27,7 +28,7 @@ public class WeatherDataController {
 	@ApiOperation(value = "Get current weather condition")
 	@GetMapping("/current")
 	public ApiResponse<WeatherData> getCurrentWeatherCondition(
-			@RequestParam(name = "location", required = true) String location) {
+			@RequestParam(name = "location", required = true) String location) throws NoDataFoundException , ApplicationErrorException {
 		WeatherData weatherData = weatherDataService.getCurrentWeatherData(location);
 		ApiResponse<WeatherData> apiResponse = new ApiResponse<>(weatherData, HttpStatus.OK.value(), null);
 		return apiResponse;
