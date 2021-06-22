@@ -1,5 +1,7 @@
 package com.weatherservice.provider.openweathermap.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +12,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.weatherservice.apicore.exception.ApplicationErrorException;
 import com.weatherservice.constant.PropertiesConstant;
 import com.weatherservice.exception.CircuitBreakerFallBackException;
 import com.weatherservice.model.WeatherData;
@@ -18,8 +19,16 @@ import com.weatherservice.provider.WeatherDataProvider;
 import com.weatherservice.provider.openweathermap.dto.CurrentWeatherResponseDto;
 import com.weatherservice.provider.openweathermap.util.OpenWeatherMapUtils;
 
+/**
+ * Open weather Map Provider class
+ * 
+ * @author tejas
+ *
+ */
 @Service("openWeatherMapProvider")
 public class OpenWeatherMapProvider implements WeatherDataProvider {
+
+	private static final Logger LOG = LoggerFactory.getLogger(OpenWeatherMapProvider.class);
 
 	@Value("${openweathermap.apikey}")
 	private String apiKey;
@@ -37,7 +46,10 @@ public class OpenWeatherMapProvider implements WeatherDataProvider {
 	@HystrixCommand(fallbackMethod = "getFallbackWeatherData")
 	public WeatherData getCurrentWeatherData(String location) throws HttpClientErrorException {
 
-		ResponseEntity<CurrentWeatherResponseDto> entity = restTemplate.getForEntity(buildCurrentWeatherURI(location),
+		LOG.info("Calling open weather map api to fetch current weather of city {}", location);
+
+		String url = buildCurrentWeatherURI(location);
+		ResponseEntity<CurrentWeatherResponseDto> entity = restTemplate.getForEntity(url,
 				CurrentWeatherResponseDto.class);
 		return buildCurrentWeatherDataModel(entity.getBody());
 

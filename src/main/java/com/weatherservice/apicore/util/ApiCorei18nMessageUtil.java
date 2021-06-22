@@ -9,7 +9,7 @@ import org.springframework.context.MessageSource;
 /**
  * Utility class to get localize message
  * 
- * @author Yogeen Loriya
+ * @author tejas
  *
  */
 public class ApiCorei18nMessageUtil {

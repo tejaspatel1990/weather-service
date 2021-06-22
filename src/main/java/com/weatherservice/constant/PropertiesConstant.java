@@ -1,5 +1,11 @@
 package com.weatherservice.constant;
 
+/**
+ * Constant class for Properties and messages defined
+ * 
+ * @author tejas
+ *
+ */
 public final class PropertiesConstant {
 
 	private PropertiesConstant() {

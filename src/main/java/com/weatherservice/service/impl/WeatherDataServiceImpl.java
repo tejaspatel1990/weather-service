@@ -1,9 +1,9 @@
 package com.weatherservice.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -23,6 +23,8 @@ import com.weatherservice.util.WeatherDataUtils;
 @Service
 public class WeatherDataServiceImpl implements WeatherDataService {
 
+	private static final Logger LOG = LoggerFactory.getLogger(WeatherDataServiceImpl.class);
+
 	@Value("${weather.history.defaul.limit}")
 	private int limit;
 
@@ -37,7 +39,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 
 	@Override
 	public WeatherData getCurrentWeatherData(String location) throws NoDataFoundException, ApplicationErrorException {
-
+		LOG.info("Saving and fetching weather data for location {}", location);
 		WeatherData weatherData = weatherDataManager.getCurrentWeatherData(location);
 		saveWeatherData(weatherData);
 		return weatherData;

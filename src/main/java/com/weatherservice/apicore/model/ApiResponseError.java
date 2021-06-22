@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Common API Response Error Structure
  * 
- * @author Yogeen Loriya
+ * @author tejas
  *
  */
 public class ApiResponseError {

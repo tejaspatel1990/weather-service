@@ -6,6 +6,12 @@ import java.util.List;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+ * DTO class for Weather history
+ * 
+ * @author tejas
+ *
+ */
 @ApiModel(description = "Current weather data  history model")
 public class WeatherHistory {
 

@@ -10,5 +10,11 @@ import com.weatherservice.model.WeatherData;
  */
 public interface WeatherDataProvider {
 
+	/**
+	 * Get current weather data from an external provider
+	 * 
+	 * @param location
+	 * @return
+	 */
 	public WeatherData getCurrentWeatherData(String location);
 }
