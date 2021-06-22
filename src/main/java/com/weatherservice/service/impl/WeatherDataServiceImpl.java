@@ -52,7 +52,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 		}
 		WeatherData weatherData = WeatherDataUtils.getWeatherDataFilterFromLocation(location);
 
-		List<WeatherData> weatherList = getListOfWeatherData(weatherData, limit);
+		List<WeatherData> weatherList = this.getListOfWeatherData(weatherData, limit);
 
 		return computeAndBuildWeatherHistory(weatherList);
 	}

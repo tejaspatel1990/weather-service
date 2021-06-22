@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -15,15 +16,18 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.weatherservice.apicore.exception.ApplicationErrorException;
 import com.weatherservice.apicore.exception.NoDataFoundException;
 import com.weatherservice.model.WeatherData;
 import com.weatherservice.model.WeatherHistory;
+import com.weatherservice.repository.WeatherDataCustomRepository;
 import com.weatherservice.repository.WeatherDataRepository;
+import com.weatherservice.util.WeatherDataUtils;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(WeatherDataServiceImpl.class)
+@PrepareForTest(fullyQualifiedNames = "com.weatherservice.*")
 public class WeatherDataServiceImplTest {
 
 	@Mock
@@ -32,8 +36,16 @@ public class WeatherDataServiceImplTest {
 	@Mock
 	private WeatherDataRepository weatherDataRepository;
 
+	@Mock
+	private WeatherDataCustomRepository weatherDataCustomRepository;
+
 	@InjectMocks
 	private WeatherDataServiceImpl weatherDataServiceImpl;
+
+	@Before
+	public void before() {
+		ReflectionTestUtils.setField(weatherDataServiceImpl, "limit", 5);
+	}
 
 	@Test
 	public void getCurrentWeatherDataSuccessfully() throws Exception {
@@ -135,4 +147,198 @@ public class WeatherDataServiceImplTest {
 		assertEquals(new Float(12.0f), actualHistory.getAveragePressure());
 	}
 
+	@Test
+	public void getWeatherHistorySuccessfully() throws Exception {
+		String location = "Berlin";
+		List<WeatherData> datas = new ArrayList<>();
+
+		WeatherData weatherDataFilter = new WeatherData();
+		weatherDataFilter.setCityName(location);
+		// weatherDataFilter.setCountry("De");
+
+		WeatherData weatherData = new WeatherData();
+		weatherData.setCityName(location);
+		weatherData.setCountry("De");
+		weatherData.setTemparature(12.0f);
+		weatherData.setPressure(12.0f);
+		weatherData.setUmbrella(false);
+
+		WeatherData weatherData2 = new WeatherData();
+		weatherData2.setCityName(location);
+		weatherData2.setCountry("De");
+		weatherData2.setTemparature(12.0f);
+		weatherData2.setPressure(12.0f);
+		weatherData2.setUmbrella(false);
+
+		datas.add(weatherData);
+		datas.add(weatherData2);
+
+		WeatherHistory history = new WeatherHistory();
+		history.setAveragePressure(12.0f);
+		history.setAveragePressure(12.0f);
+		history.setHistory(datas);
+
+		PowerMockito.mockStatic(WeatherDataUtils.class);
+		PowerMockito.when(WeatherDataUtils.getWeatherDataFilterFromLocation(location)).thenReturn(weatherDataFilter);
+		WeatherDataServiceImpl mock = PowerMockito.spy(weatherDataServiceImpl);
+		PowerMockito.doReturn(datas).when(mock).getListOfWeatherData(weatherDataFilter, 5);
+		PowerMockito.doReturn(history).when(mock, "computeAndBuildWeatherHistory", datas);
+		WeatherHistory actualWeatherHistory = mock.getWeatherHistory(location, 5);
+
+		assertNotNull(actualWeatherHistory);
+		assertEquals(actualWeatherHistory.getAveragePressure(), history.getAveragePressure());
+		assertEquals(actualWeatherHistory.getHistory().size(), 2);
+	}
+
+	@Test
+	public void getWeatherHistoryWithNoLimit() throws Exception {
+		String location = "Berlin";
+		List<WeatherData> datas = new ArrayList<>();
+
+		WeatherData weatherDataFilter = new WeatherData();
+		weatherDataFilter.setCityName(location);
+		// weatherDataFilter.setCountry("De");
+
+		WeatherData weatherData = new WeatherData();
+		weatherData.setCityName(location);
+		weatherData.setCountry("De");
+		weatherData.setTemparature(12.0f);
+		weatherData.setPressure(12.0f);
+		weatherData.setUmbrella(false);
+
+		WeatherData weatherData2 = new WeatherData();
+		weatherData2.setCityName(location);
+		weatherData2.setCountry("De");
+		weatherData2.setTemparature(12.0f);
+		weatherData2.setPressure(12.0f);
+		weatherData2.setUmbrella(false);
+
+		datas.add(weatherData);
+		datas.add(weatherData2);
+
+		WeatherHistory history = new WeatherHistory();
+		history.setAveragePressure(12.0f);
+		history.setAveragePressure(12.0f);
+		history.setHistory(datas);
+
+		PowerMockito.mockStatic(WeatherDataUtils.class);
+		PowerMockito.when(WeatherDataUtils.getWeatherDataFilterFromLocation(location)).thenReturn(weatherDataFilter);
+		WeatherDataServiceImpl mock = PowerMockito.spy(weatherDataServiceImpl);
+		PowerMockito.doReturn(datas).when(mock).getListOfWeatherData(weatherDataFilter, 5);
+		PowerMockito.doReturn(history).when(mock, "computeAndBuildWeatherHistory", datas);
+		WeatherHistory actualWeatherHistory = mock.getWeatherHistory(location, 0);
+
+		assertNotNull(actualWeatherHistory);
+		assertEquals(actualWeatherHistory.getAveragePressure(), history.getAveragePressure());
+		assertEquals(actualWeatherHistory.getHistory().size(), 2);
+	}
+
+	@Test
+	public void getWeatherHistoryWithLimitAsNull() throws Exception {
+		String location = "Berlin";
+		List<WeatherData> datas = new ArrayList<>();
+
+		WeatherData weatherDataFilter = new WeatherData();
+		weatherDataFilter.setCityName(location);
+		// weatherDataFilter.setCountry("De");
+
+		WeatherData weatherData = new WeatherData();
+		weatherData.setCityName(location);
+		weatherData.setCountry("De");
+		weatherData.setTemparature(12.0f);
+		weatherData.setPressure(12.0f);
+		weatherData.setUmbrella(false);
+
+		WeatherData weatherData2 = new WeatherData();
+		weatherData2.setCityName(location);
+		weatherData2.setCountry("De");
+		weatherData2.setTemparature(12.0f);
+		weatherData2.setPressure(12.0f);
+		weatherData2.setUmbrella(false);
+
+		datas.add(weatherData);
+		datas.add(weatherData2);
+
+		WeatherHistory history = new WeatherHistory();
+		history.setAveragePressure(12.0f);
+		history.setAveragePressure(12.0f);
+		history.setHistory(datas);
+
+		PowerMockito.mockStatic(WeatherDataUtils.class);
+		PowerMockito.when(WeatherDataUtils.getWeatherDataFilterFromLocation(location)).thenReturn(weatherDataFilter);
+		WeatherDataServiceImpl mock = PowerMockito.spy(weatherDataServiceImpl);
+		PowerMockito.doReturn(datas).when(mock).getListOfWeatherData(weatherDataFilter, 5);
+		PowerMockito.doReturn(history).when(mock, "computeAndBuildWeatherHistory", datas);
+		WeatherHistory actualWeatherHistory = mock.getWeatherHistory(location, null);
+
+		assertNotNull(actualWeatherHistory);
+		assertEquals(actualWeatherHistory.getAveragePressure(), history.getAveragePressure());
+		assertEquals(actualWeatherHistory.getHistory().size(), 2);
+	}
+
+	@Test
+	public void getListOfWeatherDataSuccessfully() {
+		String location = "Berlin";
+		List<WeatherData> datas = new ArrayList<>();
+
+		WeatherData weatherDataFilter = new WeatherData();
+		weatherDataFilter.setCityName(location);
+		// weatherDataFilter.setCountry("De");
+
+		WeatherData weatherData = new WeatherData();
+		weatherData.setCityName(location);
+		weatherData.setCountry("De");
+		weatherData.setTemparature(12.0f);
+		weatherData.setPressure(12.0f);
+		weatherData.setUmbrella(false);
+
+		WeatherData weatherData2 = new WeatherData();
+		weatherData2.setCityName(location);
+		weatherData2.setCountry("De");
+		weatherData2.setTemparature(12.0f);
+		weatherData2.setPressure(12.0f);
+		weatherData2.setUmbrella(false);
+
+		datas.add(weatherData);
+		datas.add(weatherData2);
+
+		PowerMockito.when(weatherDataCustomRepository.getWeatherHistory(weatherDataFilter, 5)).thenReturn(datas);
+
+		List<WeatherData> actualWeatherDatas = weatherDataServiceImpl.getListOfWeatherData(weatherDataFilter, 5);
+
+		assertNotNull(actualWeatherDatas);
+		assertEquals(2, actualWeatherDatas.size());
+	}
+
+	@Test(expected = NoDataFoundException.class)
+	public void getListOfWeatherDataWithNoDataFoundExcetion() {
+		String location = "Berlin";
+		List<WeatherData> datas = new ArrayList<>();
+
+		WeatherData weatherDataFilter = new WeatherData();
+		weatherDataFilter.setCityName(location);
+		// weatherDataFilter.setCountry("De");
+
+		WeatherData weatherData = new WeatherData();
+		weatherData.setCityName(location);
+		weatherData.setCountry("De");
+		weatherData.setTemparature(12.0f);
+		weatherData.setPressure(12.0f);
+		weatherData.setUmbrella(false);
+
+		WeatherData weatherData2 = new WeatherData();
+		weatherData2.setCityName(location);
+		weatherData2.setCountry("De");
+		weatherData2.setTemparature(12.0f);
+		weatherData2.setPressure(12.0f);
+		weatherData2.setUmbrella(false);
+
+		datas.add(weatherData);
+		datas.add(weatherData2);
+
+		PowerMockito.when(weatherDataCustomRepository.getWeatherHistory(weatherDataFilter, 5))
+				.thenThrow(new NoDataFoundException("xyz"));
+
+		weatherDataServiceImpl.getListOfWeatherData(weatherDataFilter, 5);
+	}
 }
