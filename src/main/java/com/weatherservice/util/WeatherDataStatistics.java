@@ -2,16 +2,16 @@ package com.weatherservice.util;
 
 import java.util.function.Consumer;
 
-import com.weatherservice.model.CurrentWeatherData;
+import com.weatherservice.model.WeatherData;
 
-public class WeatherDataStatistics implements Consumer<CurrentWeatherData> {
+public class WeatherDataStatistics implements Consumer<WeatherData> {
 
 	private float temparature = 0.0f;
 	private float presuure = 0.0f;
 	private int count = 0;
 
 	@Override
-	public void accept(CurrentWeatherData weatherData) {
+	public void accept(WeatherData weatherData) {
 		this.presuure += weatherData.getPressure();
 		this.temparature += weatherData.getTemparature();
 		count++;

@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "Current weather data model")
 @Entity
 @Table(name = "weather_data")
-public class CurrentWeatherData {
+public class WeatherData {
 
 	@ApiModelProperty(name = "id", notes = "Internal Id", example = "12")
 	@Id

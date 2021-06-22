@@ -1,24 +1,32 @@
 package com.weatherservice.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.weatherservice.apicore.exception.ApplicationErrorException;
 import com.weatherservice.apicore.exception.NoDataFoundException;
 import com.weatherservice.constant.PropertiesConstant;
-import com.weatherservice.model.CurrentWeatherData;
+import com.weatherservice.model.WeatherData;
 import com.weatherservice.model.WeatherHistory;
 import com.weatherservice.repository.WeatherDataCustomRepository;
 import com.weatherservice.repository.WeatherDataRepository;
 import com.weatherservice.service.WeatherDataService;
 import com.weatherservice.util.WeatherDataStatistics;
+import com.weatherservice.util.WeatherDataUtils;
 
 @Service
 public class WeatherDataServiceImpl implements WeatherDataService {
+
+	private static final Logger LOG = LoggerFactory.getLogger(WeatherDataServiceImpl.class);
+
+	@Value("${weather.history.defaul.limit}")
+	private int limit;
 
 	@Autowired
 	private WeatherDataManager weatherDataManager;
@@ -30,36 +38,44 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 	private WeatherDataCustomRepository weatherDataCustomRepository;
 
 	@Override
-	public CurrentWeatherData getCurrentWeatherData(String location) {
-
-		CurrentWeatherData weatherData = weatherDataManager.getCurrentWeatherData(location);
+	public WeatherData getCurrentWeatherData(String location) throws NoDataFoundException, ApplicationErrorException {
+		LOG.info("Saving and fetching weather data for location {}", location);
+		WeatherData weatherData = weatherDataManager.getCurrentWeatherData(location);
 		saveWeatherData(weatherData);
 		return weatherData;
 	}
 
 	@Override
-	public WeatherHistory getWeatherHistory(String location) {
+	public WeatherHistory getWeatherHistory(String location, Integer limit) {
 
-		CurrentWeatherData weatherData = new CurrentWeatherData();
-
-		List<String> convertedLocation = Stream.of(location.split(",", 2)).collect(Collectors.toList());
-
-		weatherData.setCityName(convertedLocation.get(0));
-
-		if (convertedLocation.size() > 1 && convertedLocation.get(1) != null && !convertedLocation.get(1).isEmpty()) {
-			weatherData.setCountry(convertedLocation.get(1));
+		// Setting up default limit
+		if (limit == null || limit <= 0) {
+			limit = this.limit;
 		}
+		WeatherData weatherData = WeatherDataUtils.getWeatherDataFilterFromLocation(location);
 
-		List<CurrentWeatherData> weatherList = weatherDataCustomRepository.getWeatherHistory(weatherData, 5);
-
-		if (weatherList == null || weatherList.isEmpty()) {
-			throw new NoDataFoundException(PropertiesConstant.WEATHER_HOSTRY_NOT_FOUND);
-		}
+		List<WeatherData> weatherList = this.getListOfWeatherData(weatherData, limit);
 
 		return computeAndBuildWeatherHistory(weatherList);
 	}
 
-	private WeatherHistory computeAndBuildWeatherHistory(List<CurrentWeatherData> weatherList) {
+	@Override
+	public List<WeatherData> getListOfWeatherData(WeatherData weatherData, int limit) {
+		List<WeatherData> weatherList = weatherDataCustomRepository.getWeatherHistory(weatherData, limit);
+
+		if (weatherList == null || weatherList.isEmpty()) {
+			throw new NoDataFoundException(PropertiesConstant.WEATHER_HOSTRY_NOT_FOUND);
+		}
+		return weatherList;
+	}
+
+	/**
+	 * Create weather data statistics
+	 * 
+	 * @param weatherList
+	 * @return
+	 */
+	private WeatherHistory computeAndBuildWeatherHistory(List<WeatherData> weatherList) {
 		WeatherHistory weatherHistory = new WeatherHistory();
 
 		WeatherDataStatistics statistics = weatherList.stream().collect(WeatherDataStatistics::new,
@@ -71,8 +87,14 @@ public class WeatherDataServiceImpl implements WeatherDataService {
 		return weatherHistory;
 	}
 
+	/**
+	 * Save current weather data
+	 * 
+	 * @param weatherData
+	 */
 	@Async
-	private void saveWeatherData(CurrentWeatherData weatherData) {
+	private void saveWeatherData(WeatherData weatherData) {
 		weatherDataRepository.save(weatherData);
 	}
+
 }

@@ -6,6 +6,12 @@ import java.util.List;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+ * DTO class for Weather history
+ * 
+ * @author tejas
+ *
+ */
 @ApiModel(description = "Current weather data  history model")
 public class WeatherHistory {
 
@@ -16,7 +22,7 @@ public class WeatherHistory {
 	Float averagePressure;
 
 	@ApiModelProperty(name = "history", notes = "Weather history")
-	List<CurrentWeatherData> history = new ArrayList<>();
+	List<WeatherData> history = new ArrayList<>();
 
 	public Float getAverageTemparature() {
 		return averageTemparature;
@@ -34,11 +40,11 @@ public class WeatherHistory {
 		this.averagePressure = averagePresuure;
 	}
 
-	public List<CurrentWeatherData> getHistory() {
+	public List<WeatherData> getHistory() {
 		return history;
 	}
 
-	public void setHistory(List<CurrentWeatherData> history) {
+	public void setHistory(List<WeatherData> history) {
 		this.history = history;
 	}
 

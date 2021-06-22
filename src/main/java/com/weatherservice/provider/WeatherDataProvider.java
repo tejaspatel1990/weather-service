@@ -1,6 +1,6 @@
 package com.weatherservice.provider;
 
-import com.weatherservice.model.CurrentWeatherData;
+import com.weatherservice.model.WeatherData;
 
 /**
  * Provider definition for third partys weather data provider
@@ -10,5 +10,11 @@ import com.weatherservice.model.CurrentWeatherData;
  */
 public interface WeatherDataProvider {
 
-	public CurrentWeatherData getCurrentWeatherData(String location);
+	/**
+	 * Get current weather data from an external provider
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public WeatherData getCurrentWeatherData(String location);
 }

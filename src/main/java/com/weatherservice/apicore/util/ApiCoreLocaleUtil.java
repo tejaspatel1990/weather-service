@@ -11,7 +11,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 /**
  * Locale Utility to get Locale from Context or Request
  * 
- * @author Yogeen Loriya
+ * @author tejas
  *
  */
 public class ApiCoreLocaleUtil {
