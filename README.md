@@ -60,7 +60,14 @@
 - ##### com.weatherservice.provider.* : 
     -  Provider component where classes for provider like open weather map etc are created
 
+# Deployment Strategy
+
+<pre>
+<img src="Weather-Serivce.png"/>  
+</pre>
+
 # Future Technical Goals
 -  Authentication and Authroization mechanism with  OAuth2.0
 -  Distributed Caching of weather information searched in our system
+
 
