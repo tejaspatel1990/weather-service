@@ -25,7 +25,7 @@
 > After running the micro-service as Spring boot application , please refer to swagger-UI screen [http://localhost:8080/swagger-ui.html]
 
 # Developer Setup
-- Clone the git hub repositroy and set import the projects as maven project in your IDE
+- Clone the git hub repositroy and import the project as a maven project in your IDE
 - Create your account on Open Weather Map and api key in the application properties file
 - Build the service as maven build by executing all the test cases
 - Run it as a Spring boot application
